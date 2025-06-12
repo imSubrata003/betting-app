@@ -3,6 +3,8 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
+import { useRouter } from 'next/navigation'
+import { validateUser } from '@/utils/validateAdmin'
 
 interface Bet {
   id: string
@@ -22,6 +24,21 @@ const BidsHistoryPage = () => {
   const [bets, setBets] = useState<Bet[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
   useEffect(() => {
     const getAllBets = async () => {

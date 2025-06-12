@@ -6,6 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { validateUser } from "@/utils/validateAdmin";
 
 const RunningGames = () => {
   const router = useRouter();
@@ -17,6 +18,21 @@ const RunningGames = () => {
   );
   const { setGames } = useAppContext();
   const [loading, setLoading] = useState(true);
+    // const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
   useEffect(() => {
     const getGames = async () => {

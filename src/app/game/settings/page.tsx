@@ -6,9 +6,27 @@ import { uploadImageToCloudinary } from '@/lib/cloudinary';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
+import { validateUser } from '@/utils/validateAdmin';
 
 const GameSettingsPage = () => {
   const [loading, setLoading] = useState(false);
+      const router = useRouter();
+      useEffect(() => {
+          const adminCheck = async () => {
+              const data = await validateUser();
+              // console.log('data', data);
+              if (data) {
+                  return data
+              } else {
+                  localStorage.removeItem("userData");
+                  router.push('/');
+              }
+          }
+  
+          adminCheck();
+      }, []);
+  
 
   const [appInfo, setAppInfo] = useState({
     appWebsite: '',

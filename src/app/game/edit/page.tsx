@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { MoreVertical } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
+import { validateUser } from '@/utils/validateAdmin';
 
 const EditGamePage = () => {
   const [games, setGames] = useState<any[]>([]);
@@ -14,6 +16,21 @@ const EditGamePage = () => {
   const [editImage, setEditImage] = useState<string | File>('');
   const [loading, setLoading] = useState(false);
   const [gameStatus, setGameStatus] = useState("on");
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
   useEffect(() => {
     const getAllGames = async () => {

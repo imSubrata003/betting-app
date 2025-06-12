@@ -1,12 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DataTable } from "@/components/DataTable";
 import { Check, Loader2, X } from "lucide-react";
+import { validateUser } from "@/utils/validateAdmin";
 
 type Deposit = {
   id: string;
@@ -14,6 +15,8 @@ type Deposit = {
   amount: number;
   transactionNumber: string;
   status: string;
+  createdAt?: string; // Added createdAt property, optional if not always present
+  method?: string;    // Optionally add method if used elsewhere
 };
 
 const DepositPage = () => {
@@ -24,6 +27,22 @@ const DepositPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+      const router = useRouter();
+      useEffect(() => {
+          const adminCheck = async () => {
+              const data = await validateUser();
+              // console.log('data', data);
+              if (data) {
+                  return data
+              } else {
+                  localStorage.removeItem("userData");
+                  router.push('/');
+              }
+          }
+  
+          adminCheck();
+      }, []);
+  
 
   const getDepositReq = async () => {
     try {

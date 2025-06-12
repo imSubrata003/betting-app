@@ -1,6 +1,7 @@
 'use client'
 
 import { useAppContext } from '@/components/context/Appcontext'
+import { validateUser } from '@/utils/validateAdmin'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -17,6 +18,22 @@ const GamePage = () => {
   const [modalLoading, setModalLoading] = useState(false)
   const [gamesLoading, setGamesLoading] = useState(true)
   const { games, setGames } = useAppContext()
+      // const router = useRouter();
+      useEffect(() => {
+          const adminCheck = async () => {
+              const data = await validateUser();
+              // console.log('data', data);
+              if (data) {
+                  return data
+              } else {
+                  localStorage.removeItem("userData");
+                  router.push('/');
+              }
+          }
+  
+          adminCheck();
+      }, []);
+  
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

@@ -1,9 +1,10 @@
 'use client'
 
 import { useAppContext } from '@/components/context/Appcontext'
+import { validateUser } from '@/utils/validateAdmin'
 import axios from 'axios'
 import { Loader2 } from 'lucide-react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState, useCallback } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 
@@ -29,6 +30,23 @@ const GameResultPage = () => {
     const { id: bajiId } = useParams()
     const { bajis } = useAppContext()
     const matchedBaji = bajis.find(baji => baji.id === bajiId)
+
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
+
 
     const fetchInitialData = useCallback(async () => {
         if (!matchedBaji) return

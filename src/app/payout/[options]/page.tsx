@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { DataTable } from "@/components/DataTable"; // Update path if different
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Check, Loader2, X } from "lucide-react";
+import { validateUser } from "@/utils/validateAdmin";
 
 type Payout = {
   id: string;
@@ -24,6 +25,21 @@ const PayoutPage = () => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
   const getWithdrawlReq = async () => {
     try {

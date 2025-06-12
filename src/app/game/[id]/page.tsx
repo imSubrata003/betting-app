@@ -1,6 +1,7 @@
 'use client'
 
 import { useAppContext } from '@/components/context/Appcontext'
+import { validateUser } from '@/utils/validateAdmin'
 import axios from 'axios'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -39,6 +40,22 @@ const GameIdPage = () => {
   const [loading, setLoading] = useState(false)
   const [loadingBajis, setLoadingBajis] = useState(true)
   const [editingBaji, setEditingBaji] = useState<any | null>(null)
+  // const router = useRouter();
+  useEffect(() => {
+    const adminCheck = async () => {
+      const data = await validateUser();
+      // console.log('data', data);
+      if (data) {
+        return data
+      } else {
+        localStorage.removeItem("userData");
+        router.push('/');
+      }
+    }
+
+    adminCheck();
+  }, []);
+
 
   useEffect(() => {
     const selectedGame = games.find((game) => game.id === gameId)
@@ -165,37 +182,37 @@ const GameIdPage = () => {
     })
   }
 
-const getStatus = (start: string, end: string): 'Running' | 'Closed' => {
-  // Get current time in IST as a Date object
-  const nowISTString = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-  const nowIST = new Date(nowISTString);
+  const getStatus = (start: string, end: string): 'Running' | 'Closed' => {
+    // Get current time in IST as a Date object
+    const nowISTString = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const nowIST = new Date(nowISTString);
 
-  const [startHours, startMinutes] = start.split(':').map(Number);
-  const [endHours, endMinutes] = end.split(':').map(Number);
+    const [startHours, startMinutes] = start.split(':').map(Number);
+    const [endHours, endMinutes] = end.split(':').map(Number);
 
-  const startDate = new Date(nowIST);
-  startDate.setHours(startHours, startMinutes, 0, 0);
+    const startDate = new Date(nowIST);
+    startDate.setHours(startHours, startMinutes, 0, 0);
 
-  const endDate = new Date(nowIST);
-  endDate.setHours(endHours, endMinutes, 0, 0);
+    const endDate = new Date(nowIST);
+    endDate.setHours(endHours, endMinutes, 0, 0);
 
-  // Handle overnight range (e.g. 23:30 - 01:00)
-  if (endDate <= startDate) {
-    endDate.setDate(endDate.getDate() + 1);
-  }
+    // Handle overnight range (e.g. 23:30 - 01:00)
+    if (endDate <= startDate) {
+      endDate.setDate(endDate.getDate() + 1);
+    }
 
-  // Handle case where now is after midnight but range spans from previous day
-  const prevStartDate = new Date(startDate);
-  prevStartDate.setDate(startDate.getDate() - 1);
-  const prevEndDate = new Date(endDate);
-  prevEndDate.setDate(endDate.getDate() - 1);
+    // Handle case where now is after midnight but range spans from previous day
+    const prevStartDate = new Date(startDate);
+    prevStartDate.setDate(startDate.getDate() - 1);
+    const prevEndDate = new Date(endDate);
+    prevEndDate.setDate(endDate.getDate() - 1);
 
-  if (nowIST >= prevStartDate && nowIST <= prevEndDate) {
-    return 'Running';
-  }
+    if (nowIST >= prevStartDate && nowIST <= prevEndDate) {
+      return 'Running';
+    }
 
-  return nowIST >= startDate && nowIST <= endDate ? 'Running' : 'Closed';
-};
+    return nowIST >= startDate && nowIST <= endDate ? 'Running' : 'Closed';
+  };
 
 
   // console.log("status : ", getStatus("23:00", "23:59"))

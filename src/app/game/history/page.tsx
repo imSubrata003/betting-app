@@ -1,11 +1,28 @@
 'use client'
 
+import { validateUser } from '@/utils/validateAdmin'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 const GameHistoryPage = () => {
   const [allGames, setAllGames] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
   useEffect(() => {
     const getAllGames = async () => {

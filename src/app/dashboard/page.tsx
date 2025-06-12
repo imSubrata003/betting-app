@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { getGamesWithStatus } from '@/components/RunningGames';
+import { validateUser } from '@/utils/validateAdmin';
+import { useRouter } from 'next/navigation';
 
 type User = {
     id: string
@@ -33,6 +35,22 @@ const AdminDashboard = () => {
     const [runningGames, setRunningGames] = useState<{ name: string; status: 'Running' | 'Closed' }[]>([])
     const [depositReq, setDepositReq] = useState<any[]>([])
     const [withdrawReq, setWithdrawReq] = useState<any[]>([])
+
+    const router = useRouter();
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {

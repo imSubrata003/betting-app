@@ -8,6 +8,7 @@ import { useAppContext } from "./context/Appcontext";
 import AuthModal from "./AuthModal";
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify'
+import { validateUser } from "@/utils/validateAdmin";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -27,29 +28,19 @@ const Navbar = () => {
     setExpandedMenu(expandedMenu === menu ? null : menu);
 
   useEffect(() => {
-    const validateUser = async () => {
-      const stored = localStorage.getItem("userData");
-
-      if (stored) {
-        const user = JSON.parse(stored);
-        const res = await axios.post("/api/user/login", {
-          phone: user.phone,
-          pass: user.password,
-        });
-        console.log("my dataaaaaaaaaaaaaaaa", res.data);
-
-
-        if (res.data) {
-          localStorage.setItem("userData", JSON.stringify(res.data));
-          setParsedData(res.data);
-        } else {
-          toast.error("Oops! Invalid User, Please Login");
-          localStorage.removeItem("userData");
-        }
+    const adminCheck = async () => {
+      const data = await validateUser();
+      // console.log('data', data);
+      if (data) {
+        setParsedData(data);
+      } else {
+        setParsedData(null);
+        localStorage.removeItem("userData");
+        router.refresh();
       }
-    };
+    }
 
-    validateUser();
+    adminCheck();
   }, []);
 
   useEffect(() => {
@@ -88,7 +79,7 @@ const Navbar = () => {
             onClick={() => router.push("/")}
             className="text-xl font-bold cursor-pointer"
           >
-            FF Moon Admin
+            MOON FF Admin
           </h1>
         </div>
 

@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Check, Cross, X } from 'lucide-react'
 import { DataTable } from '@/components/DataTable'
+import { validateUser } from '@/utils/validateAdmin'
 type User = {
     id: string
     name: string
@@ -25,6 +26,21 @@ const UsersPage = () => {
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
 
     const router = useRouter()
+    useEffect(() => {
+        const adminCheck = async () => {
+            const data = await validateUser();
+            // console.log('data', data);
+            if (data) {
+                return data
+            } else {
+                localStorage.removeItem("userData");
+                router.push('/');
+            }
+        }
+
+        adminCheck();
+    }, []);
+
 
     const [newUser, setNewUser] = useState<Omit<User, 'id' | 'status'>>({
         name: '',
@@ -105,8 +121,8 @@ const UsersPage = () => {
                 </button>
             ),
         },
-        { header: 'Phone', accessor: 'phone' },
-        { header: 'Password', accessor: 'password' },
+        { header: 'Phone', accessor: (row: User) => row.phone ?? '' },
+        { header: 'Password', accessor: (row: User) => row.password },
         {
             header: 'Status', accessor: (row: User) => (
                 <span className={`font-semibold ${row.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>

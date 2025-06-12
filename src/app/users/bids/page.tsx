@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import axios from 'axios'
 import { DataTable } from '@/components/DataTable'
 import { Loader2, X } from 'lucide-react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { validateUser } from '@/utils/validateAdmin'
 
 type Bet = {
   id: string
@@ -35,6 +36,22 @@ const Page = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [initialLoading, setInitialLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+      const router = useRouter();
+      useEffect(() => {
+          const adminCheck = async () => {
+              const data = await validateUser();
+              // console.log('data', data);
+              if (data) {
+                  return data
+              } else {
+                  localStorage.removeItem("userData");
+                  router.push('/');
+              }
+          }
+  
+          adminCheck();
+      }, []);
+  
 
   useEffect(() => {
     if (!userId) return
