@@ -18,22 +18,22 @@ const GamePage = () => {
   const [modalLoading, setModalLoading] = useState(false)
   const [gamesLoading, setGamesLoading] = useState(true)
   const { games, setGames } = useAppContext()
-      // const router = useRouter();
-      useEffect(() => {
-          const adminCheck = async () => {
-              const data = await validateUser();
-              // console.log('data', data);
-              if (data) {
-                  return data
-              } else {
-                  localStorage.removeItem("userData");
-                  router.push('/');
-              }
-          }
-  
-          adminCheck();
-      }, []);
-  
+  // const router = useRouter();
+  useEffect(() => {
+    const adminCheck = async () => {
+      const data = await validateUser();
+      // console.log('data', data);
+      if (data) {
+        return data
+      } else {
+        localStorage.removeItem("userData");
+        router.push('/');
+      }
+    }
+
+    adminCheck();
+  }, []);
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -92,6 +92,8 @@ const GamePage = () => {
       setSelectedImage(null)
       setImagePreview('')
       setShowModal(false)
+
+      window.location.reload()
     } catch (error) {
       console.error('Error creating game:', error)
       toast.error('Failed to add game.')
